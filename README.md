@@ -1,4 +1,4 @@
-# eco
+# StudyApp
 
 ## Structure
 

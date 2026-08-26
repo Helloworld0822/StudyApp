@@ -1,11 +1,24 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
+type HealthStatus = 'loading' | 'ok' | 'error'
+
 function App() {
   const [count, setCount] = useState(0)
+  const [health, setHealth] = useState<HealthStatus>('loading')
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((data) => setHealth(data.status === 'ok' ? 'ok' : 'error'))
+      .catch(() => setHealth('error'))
+  }, [])
 
   return (
     <>
@@ -19,6 +32,12 @@ function App() {
           <h1>Get started</h1>
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+          </p>
+          <p>
+            Backend health:{' '}
+            {health === 'loading' && 'checking...'}
+            {health === 'ok' && '✅ connected'}
+            {health === 'error' && '❌ unreachable'}
           </p>
         </div>
         <button

@@ -1,0 +1,20 @@
+# Rust
+backend/target/
+**/*.rs.bk
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Claude Code / OMC local state
+.claude/settings.local.json
+.omc/
+**/.omc/
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

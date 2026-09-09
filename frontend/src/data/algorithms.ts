@@ -1,0 +1,98 @@
+import type { Question } from "../questions";
+
+export const algorithmsQuestions = [
+	{
+		id: "algorithms-01",
+		subject: "algorithms",
+		topic: "탐색",
+		prompt:
+			"정렬된 배열에서 이진 탐색이 한 번 비교할 때 버리는 쪽은 무엇인가요?",
+		options: ["절반", "한 원소", "전체", "두 원소", "3분의 1"],
+		answer: 0,
+		explanation: "중간 원소와 비교해 가능성이 없는 절반을 제거합니다.",
+	},
+	{
+		id: "algorithms-02",
+		subject: "algorithms",
+		topic: "복잡도",
+		prompt: "원소 n개를 한 번씩 순회하는 알고리즘의 시간 복잡도는 무엇인가요?",
+		options: ["O(1)", "O(log n)", "O(n)", "O(n²)", "O(2ⁿ)"],
+		answer: 2,
+		explanation: "각 원소를 한 번 처리하므로 O(n)입니다.",
+	},
+	{
+		id: "algorithms-03",
+		subject: "algorithms",
+		topic: "정렬",
+		prompt: "인접한 원소를 비교해 큰 값을 뒤로 보내는 정렬은 무엇인가요?",
+		options: ["선택 정렬", "버블 정렬", "병합 정렬", "퀵 정렬", "기수 정렬"],
+		answer: 1,
+		explanation: "인접 원소를 반복 교환하는 방식은 버블 정렬입니다.",
+	},
+	{
+		id: "algorithms-04",
+		subject: "algorithms",
+		topic: "자료구조",
+		prompt: "먼저 들어온 데이터가 먼저 나오는 자료구조는 무엇인가요?",
+		options: ["스택", "큐", "힙", "트리", "그래프"],
+		answer: 1,
+		explanation: "큐는 FIFO(선입선출) 구조입니다.",
+	},
+	{
+		id: "algorithms-05",
+		subject: "algorithms",
+		topic: "자료구조",
+		prompt: "나중에 들어온 데이터가 먼저 나오는 자료구조는 무엇인가요?",
+		options: ["큐", "배열", "스택", "해시", "그래프"],
+		answer: 2,
+		explanation: "스택은 LIFO(후입선출) 구조입니다.",
+	},
+	{
+		id: "algorithms-06",
+		subject: "algorithms",
+		topic: "정렬",
+		prompt:
+			"이미 정렬된 부분에 원소를 알맞은 위치로 끼워 넣는 정렬은 무엇인가요?",
+		options: ["삽입 정렬", "버블 정렬", "선택 정렬", "힙 정렬", "병합 정렬"],
+		answer: 0,
+		explanation: "정렬된 부분에 다음 원소를 삽입하는 방식은 삽입 정렬입니다.",
+	},
+	{
+		id: "algorithms-07",
+		subject: "algorithms",
+		topic: "그래프 탐색",
+		prompt: "그래프를 가까운 정점부터 층별로 탐색하는 알고리즘은 무엇인가요?",
+		options: ["DFS", "BFS", "Kruskal", "Dijkstra", "Binary search"],
+		answer: 1,
+		explanation: "BFS는 큐를 사용해 너비 우선으로 층별 탐색합니다.",
+	},
+	{
+		id: "algorithms-08",
+		subject: "algorithms",
+		topic: "그래프 탐색",
+		prompt:
+			"그래프에서 한 경로를 끝까지 따라간 뒤 되돌아오는 탐색은 무엇인가요?",
+		options: ["BFS", "DFS", "병합", "선택", "해싱"],
+		answer: 1,
+		explanation: "DFS는 깊이 우선으로 탐색하며 필요할 때 되돌아옵니다.",
+	},
+	{
+		id: "algorithms-09",
+		subject: "algorithms",
+		topic: "자료구조",
+		prompt: "키를 해시 함수로 변환해 빠르게 값을 찾는 자료구조는 무엇인가요?",
+		options: ["연결 리스트", "해시 테이블", "스택", "이진 트리", "큐"],
+		answer: 1,
+		explanation: "해시 테이블은 키를 해시해 저장 위치를 정합니다.",
+	},
+	{
+		id: "algorithms-10",
+		subject: "algorithms",
+		topic: "복잡도",
+		prompt:
+			"입력 크기와 관계없이 일정한 횟수로 끝나는 알고리즘의 복잡도는 무엇인가요?",
+		options: ["O(n)", "O(n log n)", "O(1)", "O(n²)", "O(log n)"],
+		answer: 2,
+		explanation: "입력 크기와 무관한 일정한 작업량은 O(1)입니다.",
+	},
+] satisfies readonly Question[];

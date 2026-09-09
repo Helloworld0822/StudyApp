@@ -1,0 +1,82 @@
+.ai-panel {
+	margin-top: 28px;
+	border-top: 1px solid var(--rule);
+	padding-top: 24px;
+	word-break: keep-all;
+	overflow-wrap: anywhere;
+}
+.ai-heading h3 {
+	font-size: 20px;
+	margin: 0 0 8px;
+}
+.ai-heading > span,
+.ai-description {
+	font-size: 14px;
+	color: var(--muted);
+	line-height: 1.7;
+}
+.ai-description {
+	margin: 16px 0;
+}
+.ai-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.ai-actions button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.ai-notice {
+	font-size: 14px;
+	line-height: 1.65;
+	color: var(--math);
+	margin: 16px 0 0;
+}
+.ai-notice:empty {
+	display: none;
+}
+.ai-explanation,
+.ai-generated {
+	margin-top: 20px;
+	padding: 20px;
+	background: var(--paper);
+	border-radius: var(--radius);
+	line-height: 1.7;
+}
+.ai-explanation h4,
+.ai-generated h4 {
+	font-size: 17px;
+	margin: 0 0 12px;
+}
+.ai-explanation p,
+.ai-generated p {
+	white-space: pre-wrap;
+	font-size: 15px;
+	margin: 0;
+}
+.ai-generated ol {
+	padding-left: 24px;
+}
+.ai-generated li {
+	padding: 4px 0;
+}
+.ai-generated strong {
+	color: var(--correct);
+}
+.ai-generated button {
+	margin-top: 20px;
+}
+@media (max-width: 760px) {
+	.ai-actions {
+		flex-direction: column;
+	}
+	.ai-actions button {
+		line-height: 1.5;
+		padding: 10px;
+	}
+	.ai-explanation,
+	.ai-generated {
+		padding: 16px;
+	}
+}

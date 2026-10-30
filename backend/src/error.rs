@@ -24,6 +24,8 @@ pub enum ImportError {
     ResponseTooLarge,
     #[error("unsupported source")]
     Unsupported,
+    #[error("unsupported material")]
+    MaterialUnsupported,
 }
 
 #[derive(Serialize)]
@@ -53,6 +55,10 @@ impl IntoResponse for ImportError {
             Self::Unsupported => (
                 StatusCode::UNPROCESSABLE_ENTITY,
                 "공개된 객관식 문제와 명시적 정답을 찾지 못했습니다.",
+            ),
+            Self::MaterialUnsupported => (
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "20~12,000자의 본문을 가져올 수 있는 HTML 페이지를 사용하거나 필요한 지문을 직접 붙여 넣어 주세요.",
             ),
             Self::NotHtml => (
                 StatusCode::UNPROCESSABLE_ENTITY,

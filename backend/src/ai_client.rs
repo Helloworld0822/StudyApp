@@ -40,7 +40,9 @@ impl AiClient {
     }
 
     pub(super) async fn explain(&self, request: &ExplainRequest) -> Result<String, AiError> {
-        let content = self.complete(explain_payload(request)?).await?;
+        let content = self
+            .complete(explain_payload(request)?, Duration::from_secs(30))
+            .await?;
         let explanation =
             serde_json::from_str::<Explanation>(&content).map_err(|_| AiError::InvalidResponse)?;
         if explanation.explanation.trim().is_empty() {
@@ -50,7 +52,9 @@ impl AiClient {
     }
 
     pub(super) async fn generate(&self, question: &Question) -> Result<Question, AiError> {
-        let content = self.complete(generate_payload(question)?).await?;
+        let content = self
+            .complete(generate_payload(question)?, Duration::from_secs(30))
+            .await?;
         let generated =
             serde_json::from_str::<Generated>(&content).map_err(|_| AiError::InvalidResponse)?;
         generated
@@ -65,9 +69,15 @@ impl AiClient {
         Ok(generated.question)
     }
 
-    async fn complete(&self, mut payload: Value) -> Result<String, AiError> {
+    pub(super) async fn complete(
+        &self,
+        mut payload: Value,
+        timeout: Duration,
+    ) -> Result<String, AiError> {
         payload["model"] = Value::String(self.model.clone());
-        payload["max_completion_tokens"] = json!(2048);
+        if payload.get("max_completion_tokens").is_none() {
+            payload["max_completion_tokens"] = json!(2048);
+        }
         let body = serde_json::to_string(&payload).map_err(|_| AiError::Upstream)?;
         let endpoint = self
             .base_url
@@ -76,6 +86,7 @@ impl AiClient {
         let response = self
             .client
             .post(endpoint)
+            .timeout(timeout)
             .header(header::AUTHORIZATION, format!("Bearer {}", self.api_key))
             .header(header::CONTENT_TYPE, "application/json")
             .body(body)
@@ -175,10 +186,10 @@ fn generate_payload(question: &Question) -> Result<Value, AiError> {
     }))
 }
 
-fn schema(name: &str, schema: Value) -> Value {
+pub(super) fn schema(name: &str, schema: Value) -> Value {
     json!({"type":"json_schema","json_schema":{"name":name,"strict":true,"schema":schema}})
 }
 
-fn question_schema() -> Value {
-    json!({"type":"object","additionalProperties":false,"required":["subject","topic","prompt","options","answer","explanation"],"properties":{"subject":{"type":"string","enum":["math","english","korean","discrete","algorithms"]},"topic":{"type":"string"},"prompt":{"type":"string"},"options":{"type":"array","minItems":5,"maxItems":5,"items":{"type":"string"}},"answer":{"type":"integer","minimum":0,"maximum":4},"explanation":{"type":"string"}}})
+pub(super) fn question_schema() -> Value {
+    json!({"type":"object","additionalProperties":false,"required":["subject","topic","prompt","options","answer","explanation","passage"],"properties":{"subject":{"type":"string","enum":["math","english","korean","discrete","algorithms"]},"topic":{"type":"string"},"prompt":{"type":"string"},"options":{"type":"array","minItems":5,"maxItems":5,"items":{"type":"string"}},"answer":{"type":"integer","minimum":0,"maximum":4},"explanation":{"type":"string"},"passage":{"type":["string","null"]}}})
 }

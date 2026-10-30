@@ -21,6 +21,7 @@ fn question() -> Question {
         ],
         answer: 3,
         explanation: "2와 2를 더하면 4입니다.".to_owned(),
+        passage: None,
     }
 }
 

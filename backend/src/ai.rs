@@ -1,5 +1,7 @@
 #[path = "ai_client.rs"]
 mod ai_client;
+#[path = "material.rs"]
+mod material;
 
 use std::env;
 
@@ -15,7 +17,7 @@ use thiserror::Error;
 
 use ai_client::AiClient;
 
-const MAX_INPUT_BYTES: usize = 20_000;
+const MAX_INPUT_BYTES: usize = 60_000;
 
 #[derive(Clone)]
 struct AiSettings {
@@ -56,6 +58,7 @@ fn router_with_settings(settings: AiSettings) -> Router {
         .route("/api/ai/status", get(status))
         .route("/api/ai/explain", post(explain))
         .route("/api/ai/generate", post(generate))
+        .route("/api/ai/material", post(material::generate))
         .with_state(AiState { settings })
 }
 
@@ -119,6 +122,8 @@ struct Question {
     options: Vec<String>,
     answer: usize,
     explanation: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    passage: Option<String>,
 }
 
 impl Question {
@@ -145,6 +150,7 @@ impl Question {
             + self.prompt.len()
             + self.explanation.len()
             + self.options.iter().map(String::len).sum::<usize>()
+            + self.passage.as_ref().map_or(0, String::len)
     }
 }
 

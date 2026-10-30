@@ -2,6 +2,7 @@ mod ai;
 mod error;
 mod fetcher;
 mod parser;
+mod source;
 mod types;
 mod url_guard;
 
@@ -60,6 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = Router::new()
         .route("/api/health", get(health))
         .route("/api/import/questions", post(import_questions))
+        .route("/api/import/material", post(source::import_material))
         .merge(ai::router())
         .layer(cors);
 

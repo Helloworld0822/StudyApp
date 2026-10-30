@@ -25,6 +25,8 @@ export const questionSchema = z.object({
 	explanation: z.string().max(10000),
 	sourceUrl: sourceUrlSchema.optional(),
 	aiGenerated: z.boolean().optional(),
+	passage: z.string().trim().min(1).max(12000).optional(),
+	sourceLabel: z.string().trim().min(1).max(200).optional(),
 });
 
 export const importResultSchema = z.object({

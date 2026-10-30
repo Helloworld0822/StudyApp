@@ -14,6 +14,7 @@ const generatedSchema = z.object({
 		id: true,
 		sourceUrl: true,
 		aiGenerated: true,
+		sourceLabel: true,
 	}),
 });
 type Props = {
@@ -87,6 +88,7 @@ export function AiPanel({
 			options: question.options,
 			answer: question.answer,
 			explanation: question.explanation,
+			...(question.passage ? { passage: question.passage } : {}),
 		};
 		try {
 			const response = await ky.post(`/api/ai/${action}`, {
@@ -130,6 +132,7 @@ export function AiPanel({
 							...result.data.question,
 							id: `ai-${crypto.randomUUID()}`,
 							aiGenerated: true,
+							...(question.sourceLabel ? { sourceLabel: question.sourceLabel } : {}),
 							...(question.sourceUrl === undefined
 								? {}
 								: { sourceUrl: question.sourceUrl }),
@@ -197,6 +200,7 @@ export function AiPanel({
 			{generated !== null && (
 				<article className="ai-generated">
 					<p className="eyebrow">AI 생성 · 확인 후 저장</p>
+					{generated.passage && <div className="reading-passage">{generated.passage}</div>}
 					<h4>{generated.prompt}</h4>
 					<ol type="A">
 						{generated.options.map((option, index) => (

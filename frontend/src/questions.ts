@@ -10,6 +10,8 @@ export type Question = Readonly<{
 	readonly explanation: string;
 	readonly sourceUrl?: string;
 	readonly aiGenerated?: boolean;
+	readonly passage?: string;
+	readonly sourceLabel?: string;
 }>;
 
 import { algorithmsQuestions } from "./data/algorithms";

@@ -131,7 +131,7 @@ test("import validation, preview, duplicate protection and AI save with mock pro
 	await page.goto(base);
 	await page.getByLabel("문제 페이지 URL").fill("https://127.0.0.1/questions");
 	await page.getByRole("button", { name: "문제 미리보기" }).click();
-	await expect(page.locator(".import-message")).not.toBeEmpty();
+	await expect(page.locator(".import-panel:not(.material-panel) .import-message")).not.toBeEmpty();
 	await capture(page, "import-error-390");
 	const imported = {
 		...questions[0],

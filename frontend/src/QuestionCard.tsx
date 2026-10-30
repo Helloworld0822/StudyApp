@@ -31,6 +31,8 @@ export function QuestionCard({
 			<p className="topic">
 				{subjectCopy[current.subject].title} · {current.topic}
 			</p>
+			{current.sourceLabel && <p className="source-caption">자료: {current.sourceLabel}</p>}
+			{current.passage && <div className="reading-passage" aria-label="문제 지문">{current.passage}</div>}
 			<h2>{current.prompt}</h2>
 			{current.aiGenerated && (
 				<p className="topic">AI 생성 문제 · 정답과 해설을 함께 확인해 주세요</p>

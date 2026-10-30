@@ -3,6 +3,9 @@ import type { LearningRecord } from "./storage";
 import { percentage, subjectCopy } from "./study";
 import { Icon } from "./Icon";
 import { ImportPanel } from "./ImportPanel";
+import { MaterialPanel } from "./MaterialPanel";
+import { CoachPanel } from "./CoachPanel";
+import type { Attempt, FocusTopic } from "./coaching";
 const subjects: readonly Subject[] = [
 	"math",
 	"english",
@@ -19,8 +22,10 @@ type Props = {
 		webOnly?: boolean,
 	) => void;
 	readonly addImported: (items: readonly Question[]) => void;
+	readonly attempts: readonly Attempt[];
+	readonly onPractice: (focus: FocusTopic) => void;
 };
-export function StudyHome({ bank, record, begin, addImported }: Props) {
+export function StudyHome({ bank, record, begin, addImported, attempts, onPractice }: Props) {
 	return (
 		<section className="page home-page">
 			<div className="intro">
@@ -31,10 +36,12 @@ export function StudyHome({ bank, record, begin, addImported }: Props) {
 					공부할까요?
 				</h1>
 				<p>
-					다섯 과목, 다섯 개의 선택지.
-					<br />한 번에 5문제씩, 꾸준히 공부해요.
+					국어·영어·수학, 내 자료로 문제를 만들고
+					<br />부족한 개념을 찾아 한 번에 5문제씩 다져요.
 				</p>
 			</div>
+			<CoachPanel bank={bank} attempts={attempts} onPractice={onPractice} onDiagnose={begin} />
+			<MaterialPanel bank={bank} onImport={addImported} />
 			<section className="subject-grid" aria-label="과목 선택">
 				{subjects.map((item) => (
 					<article className={`subject-card ${item}`} key={item}>

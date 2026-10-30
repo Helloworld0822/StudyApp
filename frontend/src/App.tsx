@@ -7,17 +7,19 @@ import {
 	saveRecord,
 	type LearningRecord,
 } from "./storage";
-import {
-	percentage,
-	pickQuestions,
-	subjectCopy,
-	type StudyAnswer,
-} from "./study";
+import { pickQuestions, type StudyAnswer } from "./study";
 import { StudyHome } from "./StudyHome";
-import { QuestionCard } from "./QuestionCard";
+import { StudySession } from "./StudySession";
 import { Icon } from "./Icon";
 import { loadImported, saveImported } from "./imported";
+import { StudyResults } from "./StudyResults";
+import { CoachPanel } from "./CoachPanel";
+import {
+	loadAttempts, saveAttempts, selectFocusedQuestions,
+	type Attempt, type FocusTopic,
+} from "./coaching";
 import "./App.css";
+import "./Learning.css";
 
 type Page = "home" | "session" | "results" | "review";
 
@@ -26,10 +28,12 @@ type ActiveSession = {
 	readonly items: readonly Question[];
 	readonly review: boolean;
 	readonly webOnly: boolean;
+	readonly focus?: FocusTopic;
 };
 
 const initial = loadRecord();
 const initialImported = loadImported();
+const initialAttempts = loadAttempts();
 
 export function App() {
 	const [page, setPage] = useState<Page>("home");
@@ -39,8 +43,9 @@ export function App() {
 	]);
 	const [record, setRecord] = useState<LearningRecord>(initial.record);
 	const [notice, setNotice] = useState<string | null>(
-		initial.notice ?? initialImported.notice,
+		initial.notice ?? initialImported.notice ?? initialAttempts.notice,
 	);
+	const [attempts, setAttempts] = useState<readonly Attempt[]>(initialAttempts.attempts);
 	const [session, setSession] = useState<ActiveSession | null>(null);
 	const [index, setIndex] = useState(0);
 	const [selected, setSelected] = useState<number | null>(null);
@@ -52,6 +57,25 @@ export function App() {
 	const persist = (next: LearningRecord) => {
 		setRecord(next);
 		setNotice(saveRecord(next));
+	};
+
+	const startSession = (active: ActiveSession) => {
+		setSession(active);
+		setIndex(0);
+		setSelected(null);
+		setChecked(false);
+		setAnswers([]);
+		setPage(active.review ? "review" : "session");
+		window.scrollTo(0, 0);
+	};
+
+	const practice = (focus: FocusTopic) => {
+		const items = selectFocusedQuestions(bank, attempts, focus);
+		if (items.length === 0) {
+			setNotice("이 개념의 연습 문제를 먼저 추가해 주세요.");
+			return;
+		}
+		startSession({ subject: focus.subject, items, review: false, webOnly: false, focus });
 	};
 
 	const begin = (subject: Subject, review = false, webOnly = false) => {
@@ -72,17 +96,12 @@ export function App() {
 			);
 			return;
 		}
-		setSession({
+		startSession({
 			subject,
 			items: pickQuestions(pool, Math.min(5, pool.length)),
 			review,
 			webOnly,
 		});
-		setIndex(0);
-		setSelected(null);
-		setChecked(false);
-		setAnswers([]);
-		setPage(review ? "review" : "session");
 	};
 
 	const check = () => {
@@ -90,6 +109,12 @@ export function App() {
 		const isCorrect = current.answer === selected;
 		setAnswers([...answers, { id: current.id, correct: isCorrect }]);
 		setChecked(true);
+		const updated = [...attempts, {
+			questionId: current.id, subject: current.subject, topic: current.topic,
+			selectedAnswer: selected, correct: isCorrect, at: Date.now(),
+		}].slice(-2000);
+		setAttempts(updated);
+		setNotice(saveAttempts(updated));
 		if (session?.review && isCorrect)
 			persist(resolveWrongAnswer(record, current.id));
 	};
@@ -158,95 +183,41 @@ export function App() {
 					record={record}
 					begin={begin}
 					addImported={addImported}
+					attempts={attempts}
+					onPractice={practice}
 				/>
 			)}
 
-			{(page === "session" || page === "review") && current !== undefined && (
-				<section className="page session-page">
-					<button className="back-button" type="button" onClick={home}>
-						<Icon name="home" /> 학습 나가기
-					</button>
-					<div className="session-head">
-						<div>
-							<p className={`eyebrow ${subject}`}>
-								{session?.review
-									? "WRONG ANSWER REVIEW"
-									: subjectCopy[subject].title.toUpperCase()}
-							</p>
-							<h1>
-								{session?.review
-									? "다시 만나서 반가워요"
-									: subjectCopy[subject].title}
-							</h1>
-						</div>
-						<span className="question-count">
-							{index + 1} <i>/</i> {session?.items.length}
-						</span>
-					</div>
-					<div className="progress-track">
-						<span
-							style={{
-								transform: `scaleX(${(index + 1) / (session?.items.length ?? 1)})`,
-							}}
-						/>
-					</div>
-					<QuestionCard
-						current={current}
-						selected={selected}
-						checked={checked}
-						index={index}
-						session={{ items: session?.items ?? [] }}
-						setSelected={setSelected}
-						check={check}
-						next={next}
-						onSave={(item) => addImported([item])}
-						savedCount={bank.length - questions.length}
-					/>
-				</section>
+			{(page === "session" || page === "review") && current !== undefined && session !== null && (
+				<StudySession
+					subject={subject}
+					review={session.review}
+					focusTopic={session.focus?.topic}
+					current={current}
+					items={session.items}
+					index={index}
+					selected={selected}
+					checked={checked}
+					setSelected={setSelected}
+					check={check}
+					next={next}
+					onSave={(item) => addImported([item])}
+					savedCount={bank.length - questions.length}
+					onHome={home}
+				/>
 			)}
 
 			{page === "results" && (
-				<section className="page results-page">
-					<p className="eyebrow">SESSION COMPLETE</p>
-					<h1>
-						{session?.review ? "복습을 마쳤어요." : "오늘의 학습을 마쳤어요."}
-					</h1>
-					<article className="result-card">
-						<p>이번 학습 정답</p>
-						<strong>
-							{correct}
-							<small> / {session?.items.length}</small>
-						</strong>
-						<div className="score-bar">
-							<span
-								style={{
-									transform: `scaleX(${percentage(correct, session?.items.length ?? 0) / 100})`,
-								}}
-							/>
-						</div>
-						<p>
-							{correct === session?.items.length
-								? "완벽해요. 다음 학습도 이 리듬으로 이어가요."
-								: "틀린 문제는 오답 노트에 모았어요."}
-						</p>
-					</article>
-					<div className="result-actions">
-						{(!session?.review || remainingReview > 0) && (
-							<button
-								className="primary-button"
-								type="button"
-								onClick={() =>
-									begin(subject, session?.review, session?.webOnly)
-								}
-							>
-								한 번 더 풀기 <Icon name="refresh" />
-							</button>
-						)}
-						<button className="secondary-button" type="button" onClick={home}>
-							<Icon name="home" /> 홈으로
-						</button>
-					</div>
-				</section>
+				<StudyResults
+					correct={correct}
+					total={session?.items.length ?? 0}
+					review={session?.review ?? false}
+					canRepeat={!session?.review || remainingReview > 0}
+					onRepeat={() => session?.focus ? practice(session.focus) : begin(subject, session?.review, session?.webOnly)}
+					onHome={home}
+				>
+					<CoachPanel bank={bank} attempts={attempts} onPractice={practice} onDiagnose={begin} />
+				</StudyResults>
 			)}
 			{page === "home" && record.wrongIds.length === 0 && (
 				<p className="empty-review">

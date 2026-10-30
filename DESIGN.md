@@ -52,6 +52,9 @@ Korean type uses locally available `Noto Sans CJK KR`, `Noto Sans KR`, then syst
 - **Import panel:** paper card with labeled subject select and URL input; idle/loading/error/preview/saved states. Preview uses native details, ordered choices, explicit correct label and source link. Add button excludes duplicate IDs; imports remain local.
 - **Question provenance:** source link appears below imported questions. A separate subject action practices only imported questions.
 - **AI panel:** follows checked-answer feedback, uses the same paper and button tokens, disables requests without server configuration, and displays generated choices for explicit review before saving. Generated questions retain an AI label and any original source link.
+- **Material workshop:** reuses the import paper card, labeled fields and preview details. A reading textarea preserves paragraphs; controls show idle, fetching, generating, error, preview and saved states. Answers stay inside native details until opened. Labels distinguish source material from existing question imports.
+- **Learning coach:** a paper card on home and results with subject filters, evidence counts, topic practice actions and a numbered improvement plan. Limited evidence is explicitly labeled. Latest mistakes expand into the selected answer, correct answer and explanation. No inferred learning disability or certain cognitive cause is claimed.
+- **Reading passage:** inset paper surface with a neutral rule, 16px body text, 1.75 line height and preserved paragraphs. Source captions use quiet 14px text. Long English words and mathematical expressions wrap within the reading column.
 
 ## 4. Interaction and motion
 
@@ -60,6 +63,8 @@ Controls lift by 1px on hover and keep a 3px ink focus ring. Feedback appears on
 ## 5. Responsive behavior
 
 Above 1000px, subject cards use three columns; 761–1000px uses two; below that uses one. Import fields stack on mobile. The primary reading column remains capped at 760px. Home hero is compact enough to prioritize subject selection.
+
+Material workshop and coach follow the same responsive form and card rules. Mobile form actions stack; all text areas and reading passages use `min-width: 0` and wrapping. Reusable states are exercised in browser scenarios at 390 and 1440px in both color-scheme preferences; this product keeps its paper palette in both preferences.
 
 ## 6. Accessibility and cognitive constraints
 
